@@ -9,9 +9,21 @@ import { getCurrentUser } from "@/lib/session";
 import { formatDate } from "@/lib/format";
 
 const HERO_TILES = [
-  { seed: "cca-backpack", label: "Mochila · Patio", tall: true },
-  { seed: "cca-keys", label: "Llaves · Cancha", tall: false },
-  { seed: "cca-calculator", label: "Calculadora · Lab", tall: false },
+  {
+    img: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&h=600&fit=crop",
+    label: "Mochila · Patio",
+    tall: true,
+  },
+  {
+    img: "https://images.unsplash.com/photo-1575908539614-ff89490f4a78?w=500&h=600&fit=crop",
+    label: "Llaves · Cancha",
+    tall: false,
+  },
+  {
+    img: "https://images.unsplash.com/photo-1587145820266-a5951ee6f620?w=500&h=600&fit=crop",
+    label: "Calculadora · Lab",
+    tall: false,
+  },
 ];
 
 const STEPS = [
@@ -65,11 +77,11 @@ export default async function Home() {
 
         <div className="grid h-[420px] grid-cols-2 gap-4">
           {HERO_TILES.slice(0, 1).map((t) => (
-            <HeroTile key={t.seed} {...t} className="h-full" />
+            <HeroTile key={t.label} {...t} className="h-full" />
           ))}
           <div className="flex flex-col gap-4 pt-10">
             {HERO_TILES.slice(1).map((t) => (
-              <HeroTile key={t.seed} {...t} className="flex-1" />
+              <HeroTile key={t.label} {...t} className="flex-1" />
             ))}
           </div>
         </div>
@@ -158,18 +170,18 @@ export default async function Home() {
 }
 
 function HeroTile({
-  seed,
+  img,
   label,
   className = "",
 }: {
-  seed: string;
+  img: string;
   label: string;
   className?: string;
 }) {
   return (
     <div className={`relative overflow-hidden rounded-2xl bg-surface-2 ${className}`}>
       <Image
-        src={`https://picsum.photos/seed/${seed}/500/600`}
+        src={img}
         alt={label}
         fill
         sizes="280px"
