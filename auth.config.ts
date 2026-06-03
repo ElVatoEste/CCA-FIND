@@ -9,6 +9,9 @@ const STUDENT_ROUTES = ["/publicar", "/mis-publicaciones", "/perfil"];
  * Los providers se añaden en auth.ts (corren en Node).
  */
 export const authConfig = {
+  // Necesario en hosts no-Vercel (Railway) detrás de proxy, si no Auth.js
+  // rechaza el host y el login falla.
+  trustHost: true,
   pages: { signIn: "/login" },
   providers: [],
   callbacks: {
