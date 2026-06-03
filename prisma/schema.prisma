@@ -1,0 +1,115 @@
+// Encuéntralo CCA — esquema Prisma (PostgreSQL)
+// Regenerar cliente tras editar: npx prisma generate
+// Migrar en desarrollo:          npx prisma migrate dev --name <nombre>
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  student
+  admin
+}
+
+enum PostType {
+  lost
+  found
+}
+
+enum PostStatus {
+  active
+  resolved
+}
+
+enum ClaimStatus {
+  pending
+  accepted
+  rejected
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  grado        String
+  aula         String
+  passwordHash String
+  role         Role     @default(student)
+  createdAt    DateTime @default(now())
+
+  posts  Post[]
+  claims Claim[]
+}
+
+/// Categorías administrables desde el panel. NO hardcodear la lista.
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  icon      String
+  color     String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  posts Post[]
+
+  @@index([active])
+}
+
+model Post {
+  id          String     @id @default(cuid())
+  type        PostType
+  title       String
+  description String
+  location    String
+  eventDate   DateTime
+  status      PostStatus @default(active)
+  createdAt   DateTime   @default(now())
+
+  owner      User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId    String
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
+
+  images Image[]
+  claims Claim[]
+
+  @@index([status])
+  @@index([type])
+  @@index([ownerId])
+  @@index([categoryId])
+}
+
+model Image {
+  id  String @id @default(cuid())
+  url String
+  key String
+
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId String
+
+  @@index([postId])
+}
+
+/// Solicitud de recuperación ("creo que este objeto es mío").
+model Claim {
+  id               String      @id @default(cuid())
+  description      String
+  distinctiveMarks String
+  status           ClaimStatus @default(pending)
+  createdAt        DateTime    @default(now())
+
+  post       Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId     String
+  claimant   User   @relation(fields: [claimantId], references: [id], onDelete: Cascade)
+  claimantId String
+
+  @@index([postId])
+  @@index([claimantId])
+  @@index([status])
+}
